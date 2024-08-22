@@ -55,30 +55,42 @@ class AICodemaster(Codemaster):
         
         best_hint = None
         best_similarity = 0.0
-
         for word in self.cm_wordlist:
+            #print(word)
             if word in red_words or word in bad_words:
                 continue
+            if not self.arr_not_in_word(word, red_words + bad_words):
+                        continue
 
             # wordnet similarity score
-            wn_red_word, wn_sim = self.get_wn_similarity(word, red_words, bad_words)
+            wn_red_word, wn_sim, wn_sims = self.get_wn_similarity(word, red_words, bad_words)
 
             # word2vec similarity score
-            w2v_red_word, w2v_sim = self.get_w2v_similarity(word, red_words, bad_words)
+            w2v_red_word, w2v_sim, w2v_sims = self.get_w2v_similarity(word, red_words, bad_words)
 
             # combine them (HERE WE SHOULD TEST DIFFERENT WEIGHTS)
             total_score = (wn_sim + w2v_sim) / 2.0
 
+
             if total_score > best_similarity:
                 best_hint = word
                 best_similarity = total_score
-            
+                w2v_word = w2v_red_word
+                wn_word = wn_red_word
+                wn_dict = wn_sims
+                w2v_dict = w2v_sims
 
+                print("best sim: ", best_similarity, "\nbest hint: ", best_hint)
+
+        
+        print("Wordnet word: ", wn_word , "\nWord2Vec word: ", w2v_word, "\nwn_sims", wn_dict, "\nw2v_sims", w2v_dict, "\nHint: ", best_hint)
+        
+        # IMPLEMENT NEW WAY OF PICKING NUMBER USING 'wn_dict' AND 'w2v_dict'
+        
         # if the two algorithms pick the same red word (for max similarity), return 1. otherwise return 2
-        if wn_red_word == w2v_red_word:
+        if wn_word == w2v_word:
             return (best_hint, 1)
         else:
-            print("")
             return (best_hint,2)
         
         # could also just return (best_hint,1)
@@ -91,19 +103,25 @@ class AICodemaster(Codemaster):
         
         best_sim = 0.0
         similar_word = None
+        word_sims = {}
         for red_word in red_words:
             red_sim = 1 - cos_dist(self.concatenate(word, all_vectors), self.concatenate(red_word, all_vectors))
+            word_sims[red_word] = red_sim
+            #print("best sim: ", best_sim, "\nsim: ", red_sim)
             if red_sim > best_sim:
+                #print("word: ", word, "\nred word: ", red_word, "\nsim: ", red_sim)
                 best_sim = red_sim
                 similar_word = red_word
 
-        return similar_word, best_sim
+
+        return similar_word, best_sim, word_sims
     
     # gets wn similarity using lin similarity (returns a dict: word -> similarity)
     # we can test different similarity metrics, but lin similarity is already implemented in the codebase
     def get_wn_similarity(self, word, red_words, bad_words):
         best_sim = 0.0
         similar_word = None
+        word_sims = {}
 
         # Get synsets for the given word (the potential clue)
         word_synsets = wordnet.synsets(word)
@@ -114,15 +132,30 @@ class AICodemaster(Codemaster):
                 for red_synset in red_word_synsets:
                     try:
                         score = word_synset.lin_similarity(red_synset, self.brown_ic)
+                        word_sims[red_word] = score
                         if score and score > best_sim:
                             best_sim = score
                             similar_word = red_word
                     except:
                         continue
         
-        return similar_word, best_sim
+
+        return similar_word, best_sim, word_sims
 
     
+    def arr_not_in_word(self, word, arr):
+        if word in arr:
+            return False
+        lemm = self.wordnet_lemmatizer.lemmatize(word)
+        lancas = self.lancaster_stemmer.stem(word)
+        for i in arr:
+            if i == lemm or i == lancas:
+                return False
+            if i.find(word) != -1:
+                return False
+            if word.find(i) != -1:
+                return False
+        return True
     
 
     # This method concatenates wordvectors from muliple sources (ie word2vec, gloVe) to create 1 vector
