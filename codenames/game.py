@@ -126,13 +126,13 @@ class Game:
         for i in range(len(self.words_on_board)):
             if counter >= 1 and i % 5 == 0:
                 print("\n")
-            if self.key_grid[i] is 'Red':
+            if self.key_grid[i] == 'Red':
                 print(str.center(colorama.Fore.RED + self.words_on_board[i], 15), " ", end='')
                 counter += 1
-            elif self.key_grid[i] is 'Blue':
+            elif self.key_grid[i] == 'Blue':
                 print(str.center(colorama.Fore.BLUE + self.words_on_board[i], 15), " ", end='')
                 counter += 1
-            elif self.key_grid[i] is 'Civilian':
+            elif self.key_grid[i] == 'Civilian':
                 print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
                 counter += 1
             else:
@@ -163,13 +163,13 @@ class Game:
         for i in range(len(self.key_grid)):
             if counter >= 1 and i % 5 == 0:
                 print("\n")
-            if self.key_grid[i] is 'Red':
+            if self.key_grid[i] == 'Red':
                 print(str.center(colorama.Fore.RED + self.key_grid[i], 15), " ", end='')
                 counter += 1
-            elif self.key_grid[i] is 'Blue':
+            elif self.key_grid[i] == 'Blue':
                 print(str.center(colorama.Fore.BLUE + self.key_grid[i], 15), " ", end='')
                 counter += 1
-            elif self.key_grid[i] is 'Civilian':
+            elif self.key_grid[i] == 'Civilian':
                 print(str.center(colorama.Fore.RESET + self.key_grid[i], 15), " ", end='')
                 counter += 1
             else:
