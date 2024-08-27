@@ -142,6 +142,41 @@ class Game:
                          "\n___________________________________________________________", 60))
         print("\n")
 
+    def _display_board_guesser(self):
+        """prints out board with no color, only for guesser"""
+        print(str.center("___________________________BOARD___________________________\n", 60))
+        counter = 0
+        for i in range(len(self.words_on_board)):
+            if counter >= 1 and i % 5 == 0:
+                print("\n")
+            if self.words_on_board[i] == "*Red*":
+                print(str.center(colorama.Fore.RED + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.words_on_board[i] == "*Blue*":
+                print(str.center(colorama.Fore.BLUE + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.words_on_board[i] == "*Civilian*":
+                print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.words_on_board[i] == "*Assassin*":
+                print(str.center(colorama.Fore.MAGENTA + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.key_grid[i] == 'Red':
+                print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.key_grid[i] == 'Blue':
+                print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            elif self.key_grid[i] == 'Civilian':
+                print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+            else:
+                print(str.center(colorama.Fore.RESET + self.words_on_board[i], 15), " ", end='')
+                counter += 1
+        print(str.center(colorama.Fore.RESET +
+                         "\n___________________________________________________________", 60))
+        print("\n")
+
     def _display_board(self):
         """prints the list of words in a board like fashion (5x5)"""
         print(colorama.Style.RESET_ALL)
@@ -268,14 +303,15 @@ class Game:
         """Function that runs the codenames game between codemaster and guesser"""
         game_condition = GameCondition.HIT_RED
         game_counter = 0
+        self._display_key_grid()
         while game_condition != GameCondition.LOSS and game_condition != GameCondition.WIN:
             # board setup and display
             print('\n' * 2)
             words_in_play = self.get_words_on_board()
             current_key_grid = self.get_key_grid()
             self.codemaster.set_game_state(words_in_play, current_key_grid)
-            self._display_key_grid()
-            self._display_board_codemaster()
+            # self._display_key_grid()
+            self._display_board_guesser()
 
             # codemaster gives clue & number here
             clue, clue_num = self.codemaster.get_clue()
@@ -293,14 +329,15 @@ class Game:
                 guess_answer = self.guesser.get_answer()
 
                 # if no comparisons were made/found than retry input from codemaster
-                if guess_answer is None or guess_answer == "no comparisons":
+                if guess_answer is None or guess_answer == "c" or guess_answer == "no comparisons":
                     break
                 guess_answer_index = words_in_play.index(guess_answer.upper().strip())
                 game_condition = self._accept_guess(guess_answer_index)
 
                 if game_condition == GameCondition.HIT_RED:
                     print('\n' * 2)
-                    self._display_board_codemaster()
+                    # self._display_board_codemaster()
+                    self._display_board_guesser()
                     guess_num += 1
                     print("Keep Guessing? the clue is ", clue, clue_num)
                     keep_guessing = self.guesser.keep_guessing()
