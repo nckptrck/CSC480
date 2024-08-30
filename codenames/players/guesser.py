@@ -45,13 +45,13 @@ class HumanGuesser(Guesser):
         self.words = words
 
     def get_answer(self):
-        answer_input = input("Guesser makes turn.\nPlease enter a valid Word (or q to move on) >> ")
+        answer_input = input("Guesser makes turn.\nPlease enter a valid Word (or c to move on) >> ")
         type(answer_input)
 
         while not self._is_valid(answer_input):
             print("Input Invalid")
             print(self.words)
-            answer_input = input("Please enter a valid Word (or q to move on) >> ")
+            answer_input = input("Please enter a valid Word (or c to move on) >> ")
             type(answer_input)
         return answer_input
 
