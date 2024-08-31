@@ -7,7 +7,7 @@ This project is an implementation for **CSC 480: Artificial Intelligence** at **
 - **Robin Tun** 
 - **Ashley Moreno**
 - **Nick Patrick** 
-- **Ellot Gerlach** 
+- **Elliot Gerlach** 
 - **Katie He** 
 
 Instructor: **Dr. Rodrigo Canaan**
