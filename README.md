@@ -86,6 +86,10 @@ For example, to run the AI bot using the combined model of **WordNet and Word2Ve
 ```bash
 python run_game.py players.codemaster_w2v_wn.AICodemaster players.guesser_w2v.AIGuesser --seed 3442 --w2v players/GoogleNews-vectors-negative300.bin --wordnet ic-brown.dat
 ```
+### Agent Locations
+Our custom AI agents can be found in the following files:
+
+- Codemaster: players/codemaster_w2v_wn.py
 
 **run_game.py simply handles system arguments then called game.Game().
 See below for more details about calling game.Game() directly.**
