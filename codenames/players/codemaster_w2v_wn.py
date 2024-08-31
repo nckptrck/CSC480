@@ -80,10 +80,10 @@ class AICodemaster(Codemaster):
                 wn_dict = wn_sims
                 w2v_dict = w2v_sims
 
-                print("best sim: ", best_similarity, "\nbest hint: ", best_hint)
+                #print("best sim: ", best_similarity, "\nbest hint: ", best_hint)
 
         
-        print("Wordnet word: ", wn_word , "\nWord2Vec word: ", w2v_word, "\nwn_sims", wn_dict, "\nw2v_sims", w2v_dict, "\nHint: ", best_hint)
+        #print("Wordnet word: ", wn_word , "\nWord2Vec word: ", w2v_word, "\nwn_sims", wn_dict, "\nw2v_sims", w2v_dict, "\nHint: ", best_hint)
         
         # IMPLEMENT NEW WAY OF PICKING NUMBER USING 'wn_dict' AND 'w2v_dict'
         
