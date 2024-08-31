@@ -142,7 +142,7 @@ class AICodemaster(Codemaster):
 
         return similar_word, best_sim, word_sims
 
-    
+    # this method checks if the word is too similar to ay words on the board
     def arr_not_in_word(self, word, arr):
         if word in arr:
             return False
