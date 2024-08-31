@@ -14,6 +14,14 @@ Instructor: **Dr. Rodrigo Canaan**
 
 The project builds upon the [Codenames AI Competition Framework](https://github.com/CodenamesAICompetition/Game) on GitHub, which serves as the foundation for developing AI agents that can play the game "Codenames" by Vlaada Chvatil. This framework has been chosen because it emphasizes natural language understanding and communication, critical components for this AI competition.
 
+## Finding results
+
+- We tested our agent using the script `test-results.py` (2-3 hour runtime).
+- The data goes into a csv file titled `codenames_results.csv`
+- The plots used in our presentations can be found by loading `codenames_results.csv` into R and running results_analysis.R
+
+
+
 ## External Resources
 
 This project leverages several external resources:
