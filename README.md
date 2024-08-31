@@ -1,24 +1,95 @@
 # Codenames AI Competition Framework
 
-This is the Codenames AI Competition Framework.  The purpose of this framework is to enable an AI competition for the game "Codenames" by Vlaada Chvatil.  There are large number of AI competitions built around games (and even more platforms using games as a testbed for AI), but with few exceptions these have focused on things that AI is likely to be good at (fine, pixel-perfect control or search through a large state space).  The purpose of this competition is to test AI in a framework that:
+## Preamble
 
-* Requires the understanding of language
-* Requires communication, in a semantically meaningful way, with players of unknown provenance --  the player on the other side of the table may be a human or it may be another, unaffiliated, bot
-* Requires understanding words with multiple meanings
+This project is an implementation for **CSC 480: Artificial Intelligence** at **California Polytechnic State University (Cal Poly)**. The project is developed by the following team members:
 
-**Further installation requirements are found below.**
+- **Robin Tun** 
+- **Ashley Moreno**
+- **Nick Patrick** 
+- **Elliot Gerlach** 
+- **Katie He** 
+
+Instructor: **Dr. Rodrigo Canaan**
+
+The project builds upon the [Codenames AI Competition Framework](https://github.com/CodenamesAICompetition/Game) on GitHub, which serves as the foundation for developing AI agents that can play the game "Codenames" by Vlaada Chvatil. This framework has been chosen because it emphasizes natural language understanding and communication, critical components for this AI competition.
+
+## External Resources
+
+This project leverages several external resources:
+
+- **Python Libraries**: `gensim`, `nltk`, `colorama`
+- **Competition Framework**: [Codenames AI Competition Framework](https://github.com/CodenamesAICompetition/Game)
+- **Word Embedding Models**: Pre-trained models, including **WordNet** and **Word2Vec**, to enable semantic understanding for clue generation and guessing in the game.
+- **Datasets**: Various corpora from NLTK, including the Brown Corpus.
 
 ## Submissions
 
-Entrants in the competition will be able to submit up to two bots (at most 1 Codemaster and 1 Guesser)
+Entrants in the competition will be able to submit up to two bots (at most 1 Codemaster and 1 Guesser).
 
-## Running the game from terminal instructions
+## Prerequisite: Installation and Downloads
 
-To run the game, the terminal will require a certain amount of arguments.
-Where the order is:
-* args[0] = run_game.py
-* args[1] = package.MyCodemasterClass
-* args[2] = package.MyGuesserClass
+The installation of the [Anaconda Distribution](https://www.anaconda.com/distribution/) is recommended for managing dependencies easily. Installing NLTK and Gensim through conda is simpler and less time-consuming than other alternatives.
+
+### Installation Steps
+
+1. **Create and activate a new environment:**
+    ```bash
+    conda create --name codenames python=3.6
+    conda activate codenames
+    ```
+2. **Install the required libraries:**
+    ```bash
+    conda install gensim
+    pip install -U gensim nltk colorama
+    ```
+3. **Download NLTK data:**
+    ```python
+    python
+    >>> import nltk
+    >>> nltk.download('all')
+    >>> exit()
+    ```
+4. **Clone the project repository:**
+    ```bash
+    git clone https://github.com/nckptrck/CSC480.git
+    cd CSC480
+    cd codenames
+    ```
+5. **Verify the installation:**
+    ```bash
+    python3 -c "import scipy, numpy, gensim.models.keyedvectors, argparse, importlib, nltk, nltk.corpus, nltk.stem"
+    ```
+
+### Alternative Installation Methods
+
+You can use your system's package manager (e.g., `apt-get` on Debian, or `MacPorts/Homebrew` on macOS), or Python's `pip3`.
+
+### Additional Resources
+
+Download and set paths for the following:
+
+- [Glove Vectors](https://nlp.stanford.edu/data/glove.6B.zip) (~2.25 GB)
+- [Google News Vectors](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit) (~3.5 GB)
+
+## Running the Game from Terminal Instructions
+
+To run the game, the terminal will require a specific order of arguments:
+
+1. **Order of Arguments:**
+    - `args[0]`: `run_game.py`
+    - `args[1]`: `package.MyCodemasterClass`
+    - `args[2]`: `package.MyGuesserClass`
+
+For example, to run the AI bot using the combined model of **WordNet and Word2Vec** for the Codemaster and **Word2Vec** for the Guesser, use the following command:
+
+```bash
+python run_game.py players.codemaster_w2v_wn.AICodemaster players.guesser_w2v.AIGuesser --seed 3442 --w2v players/GoogleNews-vectors-negative300.bin --wordnet ic-brown.dat
+```
+### Agent Locations
+Our custom AI agents can be found in the following files:
+
+- Codemaster: players/codemaster_w2v_wn.py
 
 **run_game.py simply handles system arguments then called game.Game().
 See below for more details about calling game.Game() directly.**
@@ -48,12 +119,6 @@ Other optional arguments include:
   * raise flag for suppressing printing to std out
 * --game_name *String*
   * game_name in logfile
-
-An example simulation of a *wordnet codemaster* and a *word2vec guesser* in the terminal from codenames/:  
-`$ python run_game.py players.codemaster_wn_lin.AICodemaster players.guesser_w2v.AIGuesser --seed 3442 --w2v players/GoogleNews-vectors-negative300.bin  --wordnet ic-brown.dat`
-
-An example of running glove codemaster and glove guesser with different glove vectors (removed glove_glove.py)
-`$ python run_game.py players.codemaster_glove_07.AICodemaster players.guesser_glove.AIGuesser --seed 3442 --glove_cm players/glove.6B.50d.txt --glove_guesser players/glove.6B.100d.txt`
 
 ## Running the game from calling Game(...).run()
 
@@ -144,129 +209,37 @@ get_answer() -> Str
 `get_answer` returns the current guess of the Guesser, given the state of the board and the previous clue.
 
 
-
 ## Rules of the Game
 
-Codenames is a game of language understanding and communication.  The competition takes place in a single team style of play -- The Codemaster and Guesser are both on the Red team, and their goal is to discover their words as quickly as possible, while minimizing the number of incorrect guesses.
+Codenames is a game focused on language understanding and communication. The competition is played with a single team format where both the **Codemaster** and **Guesser** are on the Red team. The goal is to identify all Red team's words as quickly as possible while avoiding incorrect guesses.
 
-At the start of the game, the board consists of 25 English words:
+### Game Setup
 
-DAY SLIP SPINE WAR CHICK
-FALL HAND WALL AMAZON DEGREE
-GIANT CENTAUR CLOAK STREAM CHEST
-HAM DOG EMBASSY GRASS FLY
-CAPITAL OIL COLD HOSPITAL MARBLE
+- The board has 25 English words.
+- The Codemaster knows which words belong to the Red team, Blue team, are civilians, or are the assassin.
 
-The Codemaster has access to a hidden map that tells them the identity of all of the words:
+### Codemaster's Role
 
-*Red* *Red* *Civilian* *Assassin* *Red*
-*Red* *Civilian* *Red* *Civilian* *Civilian*
-*Civilian* *Civilian* *Civilian* *Blue* *Civilian*
-*Red* *Civilian* *Red* *Red*
+- The Codemaster gives a clue (a single word) and a number representing the number of words related to that clue.  
+  - For example: `('sky', 3)`.
+- The clue must be semantically related to the Red team's words and must not derive from any words on the board.
 
-Meaning that the words that Codemaster wants their teammate to guess are:
+### Guesser's Role
 
-DAY, SLIP, CHICK, FALL, WALL, CAPITAL, HOSPITAL, MARBLE
+- The Guesser returns a list of guesses based on the clue, in order of confidence.
+  - For example: `['CLOUD', 'FLIGHT', 'BIRD']`.
+- Correct guesses help identify the Red team's words, but incorrect guesses (like guessing a civilian or Blue team's word) end the turn.
 
-The Codemaster then supplies a clue and a number (the number of guesses the Guesser is obligated to make):
+### Game Outcomes
 
-e.g., `('pebble',2)`
+The game ends when:
 
-The clue must:
-* Be semantically related to what the Codemaster wants their guesser to guess -- no using words to tell the position of the words
-* Be a single English word
-* NOT be derived from or derive one of the words on the board -- i.e. days or cloaked are not valid clues
-
-The guesser then returns a list of their guesses, in order of importance:
-
-e.g. `['MARBLE', 'STREAM']`
-
-This would result in them guessing 1 word correctly -- MARBLE -- and guessing one that is linked to a civilian -- STREAM.  If instead the guesser had guessed:
-
-`['STREAM', 'MARBLE']`
-
-Then the result would be in 1 incorrect guess -- STREAM -- and their turn would have ended at that point.  It is important for the guesser to correctly order their guesses, as ordering is important.
-
-If a guesser guesses an invalid clue, their turn is forfeit.
-
-Play proceeds, passing back and forth, until one of 3 outcomes is achieved:
-
-* All of the Red tiles have been found -- the team wins
-* All of the Blue tiles have been found -- the team loses
-* The single *Assassin* tile is found -- the team loses
+- All Red team's words are guessed — **team wins**.
+- A Blue team's word or the assassin is guessed — **team loses**.
 
 ## Competition Rules
 
-Competition results will be scored by the number of turns required to guess all 8 red words. Scores will be calculated in an inverse proportional fashion, so the lower the better. 
+Competition results will be evaluated by the number of turns required to guess all 8 red words. Lower scores are better.
 
-* The average number of turns the codemaster/guesser takes will be the score given to each paired bot.
-* Guessing an assassin-linked word or the 7 blue words before all 8 red words will result in an instant loss and a score of 25 turns or points.
-
-Codemaster bots will be swapped and trialed with multiple guessers and conversely guesser bots will be swapped with codemasters to ensure and maximize variability and fairness.
-
-In other words you'll be paired up with other player's bots, and scored/tested to see how well your AI can perform within a more general context of Natural Language Understanding.
-
-## Prerequisite: Installation and Downloads
-Note: The installation of the [Anaconda Distribution](https://www.anaconda.com/distribution/) should be used for certain dependencies to work without issues. Also installing NLTK and gensim through conda is much simpler and less time consuming than the below alternatives.
-
-Example installation order:
-```
-(base) conda create --name codenames python=3.6
-(base) conda activate codenames
-(codenames) conda install gensim
-(codenames) pip install -U gensim
-(codenames) pip install -U nltk
-(codenames) python
->>> import nltk
->>> nltk.download('all')
->>> exit()
-(codenames) pip install -U colorama
-(codenames) git clone https://github.com/CodenamesAICompetition/Game.git
-(codenames) cd codenames
-```
-
-Alternatively you can use your system's packaging system. (*apt-get* on Debian, or *MacPorts/Homebrew* on macOS)
-Or just use Python's packaging system, pip3, which is included by default from the Python binary installer.
-
-To check that everything is installed without error type in a terminal:  
-`$ python3 -c "import scipy, numpy, gensim.models.keyedvectors, argparse, importlib, nltk, nltk.corpus, nltk.stem"`
-
-Installing Gensim:
-
-* Using Anaconda:
-```conda install gensim```
-
-* For Windows User using Conda Prompt(as well as the command on top):
-```pip install -U gensim```
-
-* For macOS, using Anaconda(same as above) or easy_install:
-```sudo easy_install --upgrade gensim```
-
-Installation of NLTK on macOS/linux:
-* Install python3 on your operation system. If python 2 and python 3 coexists in your Operating System than you must specify `python3` for your commands.
-* For macOS users, who don't have `pip3` or `python3` recognized in terminal, simply open terminal and type in `brew install python3` and check to see if `pip3` is a recognized command. If it is move on to the next step, if not type `brew postinstall python3`, or alternatively visit the [Python](https://python.org) website.
-* Type in `sudo pip3 install -U nltk`
-* Finally type in terminal (this installs all nltk packages, as opposed to a select few):
-```
-python
->>> import nltk
->>> nltk.download('all')
-```
-
-*Note for Windows user: Use the conda bash prompt for general purpose testing/running (as opposed to git bash)*
-
-Installation of NLTK on Windows:
-```pip install -U nltk```
-```
-python
->>> import nltk
->>> nltk.download('all')
-```
-
-Install colorama for colored console output:
-```pip install -U colorama```
-
-
-### These files can optionally be installed as well, provide path through command arguments:
-* [Glove Vectors](https://nlp.stanford.edu/data/glove.6B.zip) (~2.25 GB)
-* [Google News Vectors](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit) (~3.5 GB)
+- **Instant Loss:** Guessing an assassin-linked word or all blue words will result in an immediate loss, with a score of 25 points.
+- **Bot Pairing:** To ensure fair evaluation, Codemaster and Guesser bots will be paired with different bots in the competition.
